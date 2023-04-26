@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+<body>
+<script>
+    var x;
+    name="홍길동"
+    var height = 175.5;
+    var address = "서울 대학로";
+
+    document.write("이름:" + name + "<br>");
+    document.write("신장:" + height + "<br>");
+    document.write("주소:" + address + "<br>");
+</script> 
+
+<h4>대입 연산자</h4>
+<script>
+    var a=b=c=d=e=14;
+    a += 5;
+    b -= 5;
+    c *= 5;
+    d /= 5;
+    e %= 5;
+    document.write("<p>a=b=c=d=e</p>");
+    document.write("a + 5 =>" + a + "<br>");
+    document.write("b - 5 =>" + b + "<br>");
+    document.write("c * 5 =>" + c + "<br>");
+    document.write("d / 5 =>" + d + "<br>");
+    document.write("e % 5 =>" + e + "<br>");
+</script>
+
+<h4>비교 연산자</h4>
+<script>
+    var a=b=9;
+    document.write("연사전 a = " + a + ", ++a 출력 " + ++a + ", 연산 후 a= " + a +"<br>");
+    document.write("연사전 a = " + a + ", a++ 출력 " + a++ + ", 연산 후 a= " + a +"<br>");
+    document.write("연사전 b = " + b + ", --b 출력 " + --b + ", 연산 후 b= " + b +"<br>");
+    document.write("연사전 b = " + b + ", ++a 출력 " + b-- + ", 연산 후 b= " + b +"<br>");
+    
+</script>
+
+<h4>증감 연산자</h4>
+<script>
+    var a=b=9;
+    var a=11 , b=5;
+    document.write("a = " + a + ", b = " + b + "<br>");
+    document.write("a == b " + (a==b) + "<br>");
+    document.write("a == b " + (a!=b) + "<br>");
+    document.write("a == b " + (a>b) + "<br>");
+    document.write("a == b " + (a>=b) + "<br>");
+    document.write("a == b " + (a<b) + "<br>");
+    document.write("a == b " + (a<=b) + "<br>");
+</script>
+
+<h4>switch문</h4>
+<script>
+    //today = prompt("요일을 입력하세요, 월/화/수/목/금/토/일");
+
+    switch(today){
+        case "월": document.write("오늘은 월요일입니다."); break;
+        case "화": document.write("오늘은 화요일입니다."); break;
+        case "수": document.write("오늘은 수요일입니다."); break;
+        case "목": document.write("오늘은 목요일입니다."); break;
+        case "금": document.write("오늘은 금요일입니다."); break;
+        case "토": 
+        case "일": document.write("주말은 가족과 함꼐 즐겁게 보내자토."); break;
+        default:
+            document.write("요일이 잘목 입력되었습니다.");
+    }
+</script>
+
+<h4>반복문</h4>
+<script>
+    var i, j, msg;
+    //msg = prompt("원하는 텍스트를 입력하세요","Hello");
+    for(i=6; i>=1; i--){
+        document.write("<h"+i+">" + "&lt;h" + i + "&gt; 헤딩: " + msg + "</h" + i + ">");
+    }
+
+    document.write("<hr/>");
+    for(i=1; i<=10; i++){
+        for(j=1; j<=i; j++){
+            document.write("<img src='./img/orange.png'>");
+        }
+        document.write("<br>");
+    }
+
+    var num = 1;
+    while(num <= 9){
+        document.write("2 * " + num + " = " + 2*num + "<br>");
+        num++
+    }
+    num = 1;
+    do{
+        document.write("2 * " + num + " = " + 2*num + "<br>");
+        num++
+    }while(num <= 9)
+</script>
+
+<h5>continue문 , break문</h5>
+<script>
+    var n, sum =0;
+    for(n=1; n<20; n++){
+        if(n % 2){
+            continue;
+        }
+        document.write("<" + n + ">");
+        sum += n;
+        if(sum >= 100){
+            break;
+        }
+    }
+</script>
+
+<h5>함수</h5>
+<script>
+    var n_sum = function(){
+        var n = prompt("1~100 사이의 정수를 입력하세요","10");
+        s = sum(n);
+        document.write("1부터" + n +" 까지의 합은 " + s +"<br>");
+    }
+    function sum(num){
+        var res = 0;
+        document.write("<br> 1부터 " + num + "까지의 정수의 합을 계산합니다.<br><br>");
+        for(i=1;i<=num;i++){
+            res += i;
+        }
+        return res;
+    }
+    n_sum();
+
+</script>
+
+<h5>콜백 함수</h5>
+<script>
+    function runNTimes(n,callback){
+        for(var i = 1; i <= n; i++){
+            document.write(i + "번째 호출 : ");
+            callback();
+        }
+    }
+
+    runNTimes(10,function(){
+        document.write("안녕하세요! <br>");
+    })
+
+    function whatYourName(name, callback){
+        console.log("name:",name);
+        callback();        
+    }
+
+    whatYourName("홍길돌", function(){
+        console.log("name");
+    })
+
+</script>
+
+{
+    title: 'Docs',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'https://quasar.dev'
+  },
+  {
+    title: 'Github',
+    caption: 'github.com/quasarframework',
+    icon: 'code',
+    link: 'https://github.com/quasarframework'
+  },
+  {
+    title: 'Discord Chat Channel',
+    caption: 'chat.quasar.dev',
+    icon: 'chat',
+    link: 'https://chat.quasar.dev'
+  },
+  {
+    title: 'Forum',
+    caption: 'forum.quasar.dev',
+    icon: 'record_voice_over',
+    link: 'https://forum.quasar.dev'
+  },
+  {
+    title: 'Twitter',
+    caption: '@quasarframework',
+    icon: 'rss_feed',
+    link: 'https://twitter.quasar.dev'
+  },
+  {
+    title: 'Facebook',
+    caption: '@QuasarFramework',
+    icon: 'public',
+    link: 'https://facebook.quasar.dev'
+  },
+  {
+    title: 'Quasar Awesome',
+    caption: 'Community Quasar projects',
+    icon: 'favorite',
+    link: 'https://awesome.quasar.dev'
+  },
+  
+</body>
+</html>
