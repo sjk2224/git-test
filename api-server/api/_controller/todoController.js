@@ -161,6 +161,50 @@ const todoController = {
             return resData(STATUS.E300.result,STATUS.E300.resultDesc,moment().format());
         }
         return rows;
-    }
+    },
+
+    //reset
+    reset: async(req) => {
+        //turncate
+        try{
+            const query = `TRUNCATE TABLE ${TABLE.TODO}`;
+            await db.execute(query);
+        }catch(e){
+            console.log(e.message);
+            return resData(STATUS.E300.result,STATUS.E300.resultDesc,moment().format('LT'));
+        }
+
+        const {title} = req.body;
+        const done = req.body.done || "N";
+        const len = req.body.len || 100;
+        if(isEmpty(title)){
+            return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
+        }
+
+        try{
+            let query = `INSERT INTO todo (title,done) VALUES `;
+            let arr = [];
+            for (let i = 0; i < len; i++){
+                arr.push(`('${title}_${i}','${done}')`);
+            }
+            query = query + arr.join(",");
+            const [rows] = await db.execute(query);
+
+            if(rows.affectedRows != 0){
+                return resData(
+                    STATUS.S200.result,
+                    STATUS.S200.resultDesc,
+                    moment().format('LT')
+                );
+            }
+        }catch(e){
+            console.log(e.message);
+            return resData(
+                STATUS.E300.result,
+                STATUS.E300.resultDesc,
+                moment().format('LT')
+                );
+        }
+    },
 }
 module.exports = todoController;
