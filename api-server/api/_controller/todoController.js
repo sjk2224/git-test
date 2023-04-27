@@ -53,14 +53,14 @@ const getTotal_member = async () => {
 
 const getList_member = async (req) =>{
     try{
-        const lastId = parseInt(req.query.lastId) || 0;
-        console.log(lastId);
+        const seq = parseInt(req.query.seq) || 0;
+        console.log(seq);
         const len = parseInt(req.query.len) || 10;
         console.log(len);
         
         let where = "";
-        if(lastId){
-            where = `WHERE mb_seq < ${lastId}`;
+        if(seq){
+            where = `WHERE mb_seq < ${seq}`;
         }
         const query = `SELECT * FROM ${TABLE.MEMEMBER_VUE} ${where} order by mb_seq desc limit 0, ${len}`;
         const [rows] = await db.execute(query);
