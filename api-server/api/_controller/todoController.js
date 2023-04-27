@@ -39,11 +39,57 @@ const getList = async (req) =>{
     }
 };
 
+//member list
+const getTotal_member = async () => {
+    try{
+        const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.MEMEMBER_VUE}`;
+        const [[{cnt}]] = await db.execute(query);
+        return cnt;
+    }catch(e){
+        console.log(e);
+        return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+    }
+};
+
+const getList_member = async (req) =>{
+    try{
+        const lastId = parseInt(req.query.lastId) || 0;
+        console.log(lastId);
+        const len = parseInt(req.query.len) || 10;
+        console.log(len);
+        
+        let where = "";
+        if(lastId){
+            where = `WHERE mb_seq < ${lastId}`;
+        }
+        const query = `SELECT * FROM ${TABLE.MEMEMBER_VUE} ${where} order by mb_seq desc limit 0, ${len}`;
+        const [rows] = await db.execute(query);
+
+        return rows;
+    }catch(e){
+        console.log(e);
+        return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+    }
+};
+
 //delete
 const getSelectOne = async (id) =>{
     try{
         const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.TODO} WHERE id=?`;
         const values = [id];
+        const[[{cnt}]] = await db.execute(query, values);
+        return cnt;
+    }catch(e){
+        console.log(e);
+        return resData(STATUS.E300.result,STATUS.E300.resultDesc, moment().format('LT'));
+    }
+};
+
+//delete member
+const member_getSelectOne = async (seq) =>{
+    try{
+        const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.MEMEMBER_VUE} WHERE mb_seq=?`;
+        const values = [seq];
         const[[{cnt}]] = await db.execute(query, values);
         return cnt;
     }catch(e){
@@ -64,6 +110,7 @@ const todoController = {
     //create
     create: async (req) => {
         const {title, done} = req.body;
+        console.log(req.body);
         if(isEmpty(title) || isEmpty(done)){
             return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
         }
@@ -87,6 +134,32 @@ const todoController = {
         
     },
 
+    //member create
+    member_create: async(req) =>{
+
+        const {mb_id, mb_pw} = req.body;
+        console.log(req.body);
+        if(isEmpty(mb_id) || isEmpty(mb_pw)){
+            return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
+        }
+        try{
+                const query = `INSERT INTO member_vue (mb_id, mb_pw,mb_ip) VALUES (?,?,?)`;
+                const values = [mb_id, mb_pw,'127.0.0.1'];
+                const [rows] = await db.execute(query,values); 
+                if (rows.affectedRows == 1){
+                    return resData(
+                        STATUS.S200.result,
+                        STATUS.S200.resultDesc,
+                        moment().format('LT')
+                    );
+                }
+            
+        }catch(e){
+            console.log(e.message);
+            return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+        }
+    },
+
     //list
     list: async (req) => {
         const totalCount = await getTotal();
@@ -104,6 +177,25 @@ const todoController = {
         }
     },
 
+
+    //list member
+        member_list : async (req) => {
+            const totalCount = await getTotal_member();
+            const list = await getList_member(req);
+            console.log(totalCount);
+            if(totalCount > 0 && list.length){
+                return resData(
+                    STATUS.S200.result,
+                    STATUS.S200.resultDesc,
+                    moment().format('LT'),
+                    {totalCount, list}
+                );
+            }else{
+                return resData(STATUS.S201.result,STATUS.S201.resultDesc,moment().format('LT'));
+            }
+        },
+
+
     //update
     update: async (req) => {
         const { id } = req.params;
@@ -115,6 +207,58 @@ const todoController = {
         try{
             const query = `UPDATE ${TABLE.TODO} SET title =?, done =? where id= ?`;
             const values = [title,done,id];
+            const [rows] = await db.execute(query,values);
+            if (rows.affectedRows ==1 ){
+                return resData(
+                    STATUS.S200.result,
+                    STATUS.S200.resultDesc,
+                    moment().format('LT')
+                );
+            }
+        }catch(e){
+            console.log(e);
+            return resData(STATUS.E300.result, STATUS.E300.resultDesc , moment().format('LT'));
+        }
+    
+    },
+
+    //update member level
+    member_update: async (req) => {
+        const { seq } = req.params;
+        const {mb_level} = req.body;
+        if(isEmpty(seq) || isEmpty(mb_level)){
+            return resData(STATUS.E100.result,STATUS.E100.resultDesc,moment().format('LT'));
+        }
+
+        try{
+            const query = `UPDATE ${TABLE.MEMEMBER_VUE} SET mb_level =? where mb_seq= ?`;
+            const values = [mb_level,seq];
+            const [rows] = await db.execute(query,values);
+            if (rows.affectedRows ==1 ){
+                return resData(
+                    STATUS.S200.result,
+                    STATUS.S200.resultDesc,
+                    moment().format('LT')
+                );
+            }
+        }catch(e){
+            console.log(e);
+            return resData(STATUS.E300.result, STATUS.E300.resultDesc , moment().format('LT'));
+        }
+    
+    },
+
+    //update member passward
+    member_change_password: async (req) => {
+        const { seq } = req.params;
+        const {mb_pw} = req.body;
+        if(isEmpty(seq) || isEmpty(mb_pw)){
+            return resData(STATUS.E100.result,STATUS.E100.resultDesc,moment().format('LT'));
+        }
+
+        try{
+            const query = `UPDATE ${TABLE.MEMEMBER_VUE} SET mb_pw =? where mb_seq= ?`;
+            const values = [mb_pw,seq];
             const [rows] = await db.execute(query,values);
             if (rows.affectedRows ==1 ){
                 return resData(
@@ -148,6 +292,39 @@ const todoController = {
 
             const query = `DELETE FROM ${TABLE.TODO} where id = ?`;
             const values = [id];
+            const [rows] = await db.execute(query, values);
+            if(rows.affectedRows == 1){
+                return resData(
+                    STATUS.S200.result,
+                    STATUS.S200.resultDesc,
+                    moment().format('LT')
+                );
+            }
+        }catch(e){
+            console.log(e);
+            return resData(STATUS.E300.result,STATUS.E300.resultDesc,moment().format());
+        }
+        return rows;
+    },
+
+    //delete member 
+    member_delete: async(req) => {
+        const { seq } = req.params;
+        if(isEmpty(seq)){
+            return(STATUS.E100.result,STATUS.E100.resultDesc, moment().format('LT'));
+        }
+        const cnt = await member_getSelectOne(seq);
+        try{
+            if(!cnt){
+                return resData(
+                    STATUS.E100.result,
+                    STATUS.E100.resultDesc,
+                    moment().format('LT')
+                );
+            }
+
+            const query = `DELETE FROM ${TABLE.MEMEMBER_VUE} where mb_seq = ?`;
+            const values = [seq];
             const [rows] = await db.execute(query, values);
             if(rows.affectedRows == 1){
                 return resData(
