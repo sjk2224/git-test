@@ -8,6 +8,7 @@ const routes = [
       { path: '/vue', component: () => import('pages/VueEx.vue') },
       { path: '/shop', component: () => import('pages/ShoppingList.vue') },
       { path: '/todo', component: () => import('pages/Todo.vue') },
+      { path: '/dbtodo', component: () => import('pages/DbTodo.vue') },
     ]
   },
 

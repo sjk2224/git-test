@@ -9,7 +9,7 @@ const moment = require('../../util/moment');
 //list
 const getTotal = async () => {
     try{
-        const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.TODO}`;
+        const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.TODO} WHERE done='N'`;
         const [[{cnt}]] = await db.execute(query);
         return cnt;
     }catch(e){
@@ -27,9 +27,9 @@ const getList = async (req) =>{
         
         let where = "";
         if(lastId){
-            where = `WHERE id < ${lastId}`;
+            where = `AND id < ${lastId}`;
         }
-        const query = `SELECT * FROM ${TABLE.TODO} ${where} order by id desc limit 0, ${len}`;
+        const query = `SELECT * FROM ${TABLE.TODO} WHERE done = 'N'${where} order by id desc limit 0, ${len}`;
         const [rows] = await db.execute(query);
 
         return rows;
@@ -109,21 +109,23 @@ const todoController = {
 
     //create
     create: async (req) => {
-        const {title, done} = req.body;
+        const {title} = req.body;
         console.log(req.body);
-        if(isEmpty(title) || isEmpty(done)){
+        if(isEmpty(title)){
             return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
         }
 
         try{
-                const query = `INSERT INTO todo (title, done) VALUES (?,?)`;
-                const values = [title, done];
+                const query = `INSERT INTO todo (title) VALUES (?)`;
+                const values = [title];
                 const [rows] = await db.execute(query,values); 
+                console.log('sucess')
                 if (rows.affectedRows == 1){
                     return resData(
                         STATUS.S200.result,
                         STATUS.S200.resultDesc,
-                        moment().format('LT')
+                        moment().format('LT'),
+                        { id: rows.insertId}
                     );
                 }
             

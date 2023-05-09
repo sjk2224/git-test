@@ -46,7 +46,8 @@ export default{
     },
     methods:{
         onOKClick(){
-            this.$emit('onInput',this.editTask);
+            if(!this.editTask.title) this.editTask.title = this.origin;
+            this.$emit("onInput",this.editTask);
             this.dialog = false;
         },
         onCancleClick(){
