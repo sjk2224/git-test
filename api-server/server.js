@@ -5,6 +5,8 @@ const http = require('http');
 const app = express();
 const port = config.PORT;
 const cors = require('cors');
+const path = require('path');
+const fs = require('fs')
 
 //cors
 const corsOptions = {
@@ -26,3 +28,11 @@ const webServer = http.createServer(app);
 webServer.listen(port,()=>{
     console.log(`http://localhost:${port}`);
 })
+
+//global setting
+global.UPLOAD_PATH = path.join("upload/");
+global.MEMBER_PHOTO_PATH = path.join("upload/memberPhoto");
+fs.mkdirSync(MEMBER_PHOTO_PATH,{recursive:true});
+
+//image
+app.use("/upload/memberPhoto",express.static("upload/memberPhoto"));
